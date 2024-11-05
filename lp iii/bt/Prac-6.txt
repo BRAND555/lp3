@@ -1,0 +1,135 @@
+Step 1: Install Prerequisites
+You’ll need Node.js, npm, Docker, and Composer CLI.
+
+# Install Node.js and npm (ensure Node.js version 8.x):
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install Docker and Docker-Compose:
+sudo apt-get install -y docker.io
+sudo apt-get install -y docker-compose
+
+# Install Hyperledger Composer CLI:
+npm install -g composer-cli
+
+# Other Composer tools (use as needed):
+npm install -g composer-rest-server
+npm install -g generator-hyperledger-composer
+npm install -g yo
+npm install -g composer-playground
+
+Step 2: Set Up Development Environment
+
+Download the Hyperledger Fabric environment:
+# Download Fabric and start
+mkdir ~/fabric-dev-servers && cd ~/fabric-dev-servers
+curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
+tar -xvf fabric-dev-servers.tar.gz
+
+# Start Fabric
+./downloadFabric.sh
+./startFabric.sh
+./createPeerAdminCard.sh
+
+
+Step 3: Define the Business Network Model:
+--1.Create a directory for the business network:
+mkdir my-business-network && cd my-business-network
+
+--2.Use Yeoman to generate a skeleton for the business network:
+yo hyperledger-composer:businessnetwork
+Enter details as prompted (e.g., namespace, networkName, description).
+
+--3. Define the business network in the models/ folder by creating a file, say org.example.mynetwork.cto. This file describes assets, participants, and transactions:
+namespace org.example.mynetwork
+
+asset Commodity identified by commodityId {
+    o String commodityId
+    o String description
+    o Double price
+}
+
+participant Trader identified by traderId {
+    o String traderId
+    o String name
+}
+
+transaction TradeTransaction {
+    --> Commodity commodity
+    --> Trader trader
+}
+
+Step 4: Define Access Control Rules
+In permissions.acl, set up access control for the participants:
+
+
+/**
+ * Access control for `Trader` and `Commodity` assets.
+ */
+rule Default {
+   description: "Allow all participants full access to resources."
+   participant: "ANY"
+   operation: ALL
+   resource: "org.example.mynetwork.*"
+   action: ALLOW
+}
+
+
+Step 5: Define Transaction Logic
+In lib/logic.js, define transaction logic for trading commodities:
+
+/**
+ * Trade a commodity from one trader to another
+ * @param {org.example.mynetwork.TradeTransaction} tradeTransaction
+ * @transaction
+ */
+async function tradeCommodity(tradeTransaction) {
+   tradeTransaction.commodity.trader = tradeTransaction.trader;
+   const assetRegistry = await getAssetRegistry('org.example.mynetwork.Commodity');
+   await assetRegistry.update(tradeTransaction.commodity);
+}
+
+Step 6: Deploy the Business Network
+--1. Package the business network:
+composer archive create -t dir -n .
+
+
+--2. Install the business network:
+composer network install --card PeerAdmin@hlfv1 --archiveFile my-business-network@0.0.1.bna
+
+
+--3. Start the business network:
+composer network start --networkName my-business-network --networkVersion 0.0.1 --card PeerAdmin@hlfv1 --networkAdmin admin --networkAdminEnrollSecret adminpw
+
+
+--4. Import the network administrator card:
+
+composer card import -f admin@my-business-network.card
+
+
+--5. Test the connection:
+composer network ping --card admin@my-business-network
+
+
+
+Step 7: Test the Business Network
+Use the Composer REST Server to interact with the network via API.
+
+--1. Start the REST server:
+
+composer-rest-server -c admin@my-business-network -n never -u true -w true
+
+--2. Go to http://localhost:3000/explorer to interact with the business network through REST API.
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,172 @@
+Lab Assignment No.04
+
+Step 1: Create smart contract using solidity programming.
+
+Functions in Solidity 
+1. Simple public function.
+
+pragma solidity >= 0.5.0 < 0.9.0;
+contract local {
+uint age= 10;
+function getter() public view returns (uint) {
+return age; }
+function setter() public {
+age age + 1;
+}
+}
+
+
+Step 2: After writing the above code on Remix IDE in a new file with sol extension, you 
+can compile the code, visit the deploy section, and deploy the code to observe the deploy 
+section output as shown below. The value will increase asyou click the setter and getter 
+function buttons.
+
+  2. Constructor in solidity 
+
+pragma solidity >= 0.5.0 < 0.9.0;
+contract local {
+uint public count;
+constructor (uint new count) { count new_count;
+}
+}
+
+3. Loops: 
+pragma solidity >= 0.5.0 < 0.9.0; 
+contract Loops 
+{ 
+uint [3] public arr; uint public count; 
+function Whileloop() public 
+{ 
+while(count < arr.length) 
+{ 
+arr[count] = count; count++; 
+} 
+} 
+function Forloop() public { 
+for(uint i=count; i<arr.length; i++) 
+{ 
+arr[count] = count; 
+count++; 
+} 
+} 
+
+
+- If-else Statements in Solidity: 
+pragma solidity >= 0.5.0 < 0.9.0; 
+contract Array { 
+function check(int a) public pure returns(string memory) { 
+string memory value; 
+if(a > 0) { 
+value = "Greater Than zero"; 
+} 
+else if(a == 0) { 
+value = "Equal to zero"; 
+} 
+else { 
+value = "Less than zero"; 
+} 
+return value; 
+} 
+} 
+
+4. Arrays: 
+pragma solidity >= 0.5.0 < 0.9.0;
+contract Array {
+uint [4] public arr [10, 20, 30, 40);
+function setter(uint index, uint value) public ( arr[index] = value;
+}
+return arr.length;
+}
+}
+
+5. For dynamic array:
+
+pragma solidity >= 0.5.0 < 0.9.0;
+contract Array (
+uint [] public arr;
+function PushElement (uint item) public {
+arr.push(item);
+function Length() public view returns(uint) {
+return arr.length;
+function PopElement() public ( arr.pop
+}
+}
+
+-- Structure in Solidity:
+pragma solidity >= 0.5.0 < 0.9.0;
+
+struct Student {
+
+uint rollNo;
+
+string name;
+
+}
+
+contract Demo {
+
+Student public s1;
+
+constructor (uint _rollNo, string memory_name) {
+
+s1.rollNo = _rollNo;
+
+s1.name = name;
+
+}
+
+// to change the value we have to implement a setter function function changeValue(uint _rollNo, string memory_name) public {
+
+Student memory new_student = Student( {
+
+rollNo : _rollNo,
+
+name : _name
+
+});
+
+s1 new_student;
+
+}
+
+}
+
+-- Create a Smart Contract with CRUD Functionality:
+pragma solidity ^0.5.0; 
+contract Crud { 
+struct User { 
+uint id; 
+string name; 
+} 
+User[] public users; 
+uint public nextId = 0; 
+function Create(string memory name) public { 
+users.push(User(nextId, name)); 
+nextId++; 
+} 
+function Read(uint id) view public returns(uint, string memory) { 
+for(uint i=0; i<users.length; i++) { 
+if(users[i].id == id) { 
+return(users[i].id, users[i].name); 
+} 
+} 
+function Update(uint id, string memory name) public { 
+for(uint i=0; i<users.length; i++) { 
+if(users[i].id == id) { 
+users[i].name =name; 
+} 
+} 
+} 
+function Delete(uint id) public { 
+delete users[id]; 
+} 
+function find(uint id) view internal returns(uint) { 
+for(uint i=0; i< users.length; i++) { 
+if(users[i].id == id) { 
+return i; 
+} 
+} 
+// if user does not exist then revert back 
+revert("User does not exist"); 
+} 
+}
