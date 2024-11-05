@@ -1,0 +1,95 @@
+// 4. Write a program to solve a 0-1 Knapsack problem using dynamic programming or 
+//    branch and bound strategy.
+
+#include <iostream>
+using namespace std;
+
+// Class to represent the Knapsack problem
+class Knapsack {
+private:
+    int *weights; // Array to store weights
+    int *values;  // Array to store values
+    int n;        // Number of items
+    int W;        // Maximum weight capacity
+
+public:
+    // Constructor to initialize weights and values
+    Knapsack(int numItems, int maxWeight) : n(numItems), W(maxWeight) {
+        weights = new int[n]; // Dynamic allocation of weights array
+        values = new int[n];  // Dynamic allocation of values array
+    }
+
+    // Destructor to free allocated memory
+    ~Knapsack() {
+        delete[] weights;
+        delete[] values;
+    }
+
+    // Function to take input for weights and values
+    void input() {
+        cout << "Enter the weights of the items:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "Weight of item " << i + 1 << ": ";
+            cin >> weights[i];
+        }
+
+        cout << "Enter the values of the items:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "Value of item " << i + 1 << ": ";
+            cin >> values[i];
+        }
+    }
+
+    // Function to solve the 0-1 Knapsack problem using dynamic programming
+    int solve() {
+        // Create a 2D array to store the maximum value for each combination of items and weights
+        int K[n + 1][W + 1];
+
+        // Build the K array in a bottom-up manner
+        for (int i = 0; i <= n; i++) {
+            for (int w = 0; w <= W; w++) {
+                // If no items or weight is 0, then value is 0
+                if (i == 0 || w == 0) {
+                    K[i][w] = 0;
+                }
+                // If the weight of the current item is less than or equal to the current capacity
+                else if (weights[i - 1] <= w) {
+                    // Take the maximum of including or not including the current item
+                    K[i][w] = max(K[i - 1][w], values[i - 1] + K[i - 1][w - weights[i - 1]]);
+                } else {
+                    // Current item cannot be included, carry forward the previous value
+                    K[i][w] = K[i - 1][w];
+                }
+            }
+        }
+
+        // The last cell of the array contains the maximum value that can be obtained
+        return K[n][W];
+    }
+};
+
+int main() {
+    int n, W;
+
+    // Input number of items
+    cout << "Enter the number of items: ";
+    cin >> n;
+
+    // Input the maximum capacity of the knapsack
+    cout << "Enter the maximum weight capacity of the knapsack: ";
+    cin >> W;
+
+    // Create a Knapsack object
+    Knapsack knapsack(n, W);
+
+    // Take input for weights and values
+    knapsack.input();
+
+    // Calculate the maximum value that can be obtained
+    int maxValue = knapsack.solve();
+
+    // Output the result
+    cout << "The maximum value that can be obtained is: " << maxValue << endl;
+
+    return 0;
+}

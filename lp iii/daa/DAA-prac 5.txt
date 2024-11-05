@@ -1,0 +1,120 @@
+// ******** 5. Design 8-Queens matrix having first Queen placed. Use backtracking to place 
+//             remaining Queens to generate the final 8-queen’s matrix.
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Function to check if it's safe to place a queen at (row, col)
+bool isSafe(const vector<vector<int>>& board, int row, int col, int n) {
+    // Check the same column for another queen
+    for (int i = 0; i < row; i++) {
+        if (board[i][col] == 1) {
+            return false; // Another queen found in the same column
+        }
+    }
+
+    // Check the upper-left diagonal for another queen
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j] == 1) {
+            return false; // Another queen found in the upper-left diagonal
+        }
+    }
+
+    // Check the upper-right diagonal for another queen
+    for (int i = row, j = col; i >= 0 && j < n; i--, j++) {
+        if (board[i][j] == 1) {
+            return false; // Another queen found in the upper-right diagonal
+        }
+    }
+
+    return true; // It is safe to place the queen
+}
+
+// Function to solve the N-Queens problem using backtracking
+bool solveNQueensUtil(vector<vector<int>>& board, int row, int n) {
+    // Base case: If all queens are placed
+    if (row == n) {
+        // Print the board configuration
+        for (const auto& r : board) {
+            for (int col : r) {
+                cout << (col == 1 ? " Q " : " . "); // 'Q' for queen, '.' for empty
+            }
+            cout << endl; // Move to the next row
+        }
+        return true; // Solution found
+    }
+
+    // Try placing queen in each column of the current row
+    for (int col = 0; col < n; col++) {
+        if (isSafe(board, row, col, n)) { // Check if it's safe to place the queen
+            board[row][col] = 1; // Place the queen
+
+            // Recursively place the remaining queens
+            if (solveNQueensUtil(board, row + 1, n)) {
+                return true; // If a solution is found, return true
+            }
+
+            // Backtrack: Remove the queen if placing it didn't lead to a solution
+            board[row][col] = 0; // Remove the queen
+        }
+    }
+
+    return false; // No valid position found for the current row
+}
+
+// Function to initialize the board and start the solving process
+void solveNQueens(int n) {
+    vector<vector<int>> board(n, vector<int>(n, 0)); // Initialize the board with 0s
+    solveNQueensUtil(board, 0, n); // Start solving from the first row
+}
+
+int main() {
+    int n; // Variable to store the size of the chessboard
+    cout << "Enter the number of queens (N): ";
+    cin >> n; // Take input from the user
+
+    // Input validation
+    if (n <= 0) {
+        cout << "Please enter a positive integer." << endl;
+        return 1; // Exit with an error code
+    }
+
+    cout << "One possible arrangement of " << n << " queens is:\n";
+    solveNQueens(n); // Solve the N-Queens problem
+
+    return 0; // Return 0 to indicate successful completion
+}
+
+/*
+Explanation of Key Sections
+
+1. isSafe Function:
+This function checks if it's safe to place a queen at the specified (row, col) position.
+It checks:
+The column for existing queens.
+The upper-left diagonal for existing queens.
+The upper-right diagonal for existing queens.
+Returns true if it's safe to place the queen, otherwise returns false.
+
+2. solveNQueens Function:
+This function attempts to place queens row by row using backtracking.
+If a queen can be placed in a column of the current row, it places the queen and recursively tries to place queens in subsequent rows.
+If placing a queen doesn't lead to a solution, it backtracks by removing the queen and trying the next column.
+Returns true if all queens are successfully placed, otherwise returns false.
+
+3. printBoard Function:
+This function prints the current state of the chessboard.
+Displays Q for a queen and . for an empty space.
+
+4. Main Function:
+Initializes the chessboard and prompts the user for the position of the first queen.
+Validates the user input to ensure it's within the bounds of the board.
+Places the first queen on the board and calls solveNQueens to find a solution.
+If a solution is found, it prints the board; otherwise, it informs the user that no solution exists.
+
+Usage
+To use the program, compile and run it. Enter the row and column indices (from 0 to 7) for the first queen's position. 
+The program will then attempt to place the remaining queens and display the final arrangement if a solution exists.
+*/

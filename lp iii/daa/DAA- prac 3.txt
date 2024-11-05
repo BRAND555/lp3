@@ -1,0 +1,100 @@
+// 3. Write a program to solve a fractional Knapsack problem using a greedy method. 
+
+#include <iostream>
+
+using namespace std;
+
+// Class to represent an item
+class Item {
+public:
+    int value;  // Value of the item
+    int weight; // Weight of the item
+
+    // Constructor for easy item creation
+    Item(int v, int w) : value(v), weight(w) {}
+};
+
+// Function to sort items based on value-to-weight ratio using bubble sort
+void sortItemsByValuePerWeight(Item items[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            double ratioA = static_cast<double>(items[j].value) / items[j].weight;
+            double ratioB = static_cast<double>(items[j + 1].value) / items[j + 1].weight;
+
+            // Swap items if they are out of order
+            if (ratioA < ratioB) {
+                Item temp = items[j];
+                items[j] = items[j + 1];
+                items[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Class to represent the Fractional Knapsack problem
+class FractionalKnapsack {
+public:
+    // Function to solve the fractional knapsack problem
+    double getMaxValue(Item items[], int n, int capacity) {
+        // Sort items by their value-to-weight ratio in descending order
+        sortItemsByValuePerWeight(items, n);
+
+        double totalValue = 0.0; // Total value of items taken
+        for (int i = 0; i < n; i++) {
+            if (capacity <= 0) break; // If the capacity is full, exit the loop
+
+            // If the item can be completely taken
+            if (items[i].weight <= capacity) {
+                totalValue += items[i].value; // Add entire value of the item
+                capacity -= items[i].weight;   // Decrease the capacity
+            } else {
+                // If the item cannot be fully taken, take the fractional part
+                totalValue += items[i].value * (static_cast<double>(capacity) / items[i].weight);
+                capacity = 0; // Knapsack is now full
+            }
+        }
+        return totalValue; // Return the maximum value
+    }
+};
+
+int main() {
+    int n; // Number of items
+
+    // Input the number of items
+    cout << "Enter the number of items: ";
+    cin >> n;
+
+    // Dynamically allocate an array of pointers to hold the items
+    Item** items = new Item*[n]; 
+
+    // Input the values and weights of the items
+    for (int i = 0; i < n; i++) {
+        int value, weight;
+        cout << "Enter value and weight for item " << i + 1 << ": ";
+        cin >> value >> weight;
+        items[i] = new Item(value, weight); // Initialize each item dynamically
+    }
+
+    int capacity; // Maximum weight capacity of the knapsack
+
+    // Input the capacity of the knapsack
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> capacity;
+
+    // Create a FractionalKnapsack object
+    FractionalKnapsack knapsack;
+
+    // Get the maximum value that can be carried
+    double maxValue = knapsack.getMaxValue(reinterpret_cast<Item*>(items), n, capacity);
+
+    // Display the result
+    cout << "Maximum value in the Knapsack = " << maxValue << endl;
+
+    // Clean up dynamically allocated memory
+    for (int i = 0; i < n; i++) {
+        delete items[i]; // Free each item
+    }
+    delete[] items; // Free the array of pointers
+
+    return 0;
+}

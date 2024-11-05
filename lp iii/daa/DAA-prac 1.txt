@@ -1,0 +1,62 @@
+//**** 1. Write a program to calculate Fibonacci numbers and find its step count.***********
+
+#include <iostream>
+
+using namespace std;
+
+// Function to calculate Fibonacci number using recursion
+int fibonacci(int n, int &stepCount) {
+    stepCount++; // Increment step count for each function call
+
+    // Base cases
+    if (n == 0) {
+        return 0; // F(0) = 0
+    } else if (n == 1) {
+        return 1; // F(1) = 1
+    } else {
+        // Recursive call to calculate Fibonacci number
+        return fibonacci(n - 1, stepCount) + fibonacci(n - 2, stepCount);
+    }
+}
+
+int main() {
+    int n; // Variable to store user input
+    int stepCount = 0; // Variable to count steps
+
+    // Prompt user for input
+    cout << "Enter the position of the Fibonacci number you want to calculate: ";
+    cin >> n;
+
+    // Validate input
+    if (n < 0) {
+        cout << "Please enter a non-negative integer." << endl;
+        return 1; // Exit with error code
+    }
+
+    // Calculate Fibonacci number and count steps
+    int result = fibonacci(n, stepCount);
+
+    // Display the result and step count
+    cout << "Fibonacci number at position " << n << " is: " << result << endl;
+    cout << "Number of steps taken: " << stepCount << endl;
+
+    return 0; // Exit successfully
+}
+/*
+
+### Explanation:
+1. **Function `fibonacci`**: This function computes the Fibonacci number for a given position `n` using recursion. 
+    It takes an additional reference parameter `stepCount` to keep track of the number of function calls (steps).
+   - Base cases are handled first: If `n` is 0, it returns 0; if `n` is 1, it returns 1.
+   - For any other value of `n`, it calls itself twice to compute the previous two Fibonacci numbers and sums them.
+
+2. **`main` function**:
+   - It prompts the user for a non-negative integer input.
+   - It validates the input to ensure it's non-negative.
+   - It calls the `fibonacci` function and passes the step count by reference.
+   - Finally, it prints the Fibonacci number and the total step count.
+
+### Note:
+This program uses recursion, which can be inefficient for large `n` due to repeated calculations. 
+For larger Fibonacci numbers, an iterative approach or memoization would be more efficient.
+*/

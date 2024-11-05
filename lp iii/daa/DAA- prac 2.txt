@@ -1,0 +1,156 @@
+// 2. Implement and find the characters with the frequencies Huffman encoding 
+// using greedy strategy. 
+
+#include <iostream>
+#include <cstring> // For strcpy and strcat
+
+using namespace std;
+
+// Class to represent a node in the Huffman tree
+class Node {
+public:
+    char character; // Character stored in this node
+    int frequency;  // Frequency of this character
+    Node* left;     // Pointer to left child
+    Node* right;    // Pointer to right child
+
+    // Constructor for the Node
+    Node(char character, int frequency) 
+        : character(character), frequency(frequency), left(nullptr), right(nullptr) {}
+};
+
+// Class to implement Huffman coding
+class HuffmanCoding {
+public:
+    // Function to build the Huffman tree and generate codes
+    void buildHuffmanTree(char characters[], int frequencies[], int n) {
+        Node* nodes[256]; // Array to hold nodes
+        int size = n;
+
+        // Create a leaf node for each character
+        for (int i = 0; i < n; i++) {
+            nodes[i] = new Node(characters[i], frequencies[i]);
+        }
+
+        // Build the Huffman tree
+        while (size > 1) {
+            // Find the two nodes with the smallest frequency
+            int min1 = findMinIndex(nodes, size);
+            Node* left = nodes[min1];
+
+            // Remove the node from the array
+            nodes[min1] = nodes[size - 1];
+            size--;
+
+            int min2 = findMinIndex(nodes, size);
+            Node* right = nodes[min2];
+
+            // Remove the node from the array
+            nodes[min2] = nodes[size - 1];
+            size--;
+
+            // Create a new internal node
+            Node* internalNode = new Node('\0', left->frequency + right->frequency);
+            internalNode->left = left;
+            internalNode->right = right;
+
+            // Add the new node back to the array
+            nodes[size] = internalNode;
+            size++;
+        }
+
+        // The remaining node is the root of the Huffman tree
+        root = nodes[0];
+        generateCodes(root, "");
+    }
+
+    // Function to print the Huffman codes
+    void printCodes() const {
+        cout << "Character Huffman Codes:\n";
+        printCodesRec(root, "");
+    }
+
+private:
+    Node* root; // Root of the Huffman tree
+
+    // Function to find the index of the node with the smallest frequency
+    int findMinIndex(Node* nodes[], int size) {
+        int minIndex = 0;
+        for (int i = 1; i < size; i++) {
+            if (nodes[i]->frequency < nodes[minIndex]->frequency) {
+                minIndex = i;
+            }
+        }
+        return minIndex;
+    }
+
+    // Recursive function to generate and print Huffman codes
+    void generateCodes(Node* node, const char* code) const {
+        if (!node) return;
+
+        // If this is a leaf node, print the character and its code
+        if (node->left == nullptr && node->right == nullptr) {
+            cout << node->character << ": " << code << endl;
+            return;
+        }
+
+        // Traverse left and right children
+        char leftCode[256];
+        char rightCode[256];
+        strcpy(leftCode, code);
+        strcat(leftCode, "0");
+        generateCodes(node->left, leftCode);
+
+        strcpy(rightCode, code);
+        strcat(rightCode, "1");
+        generateCodes(node->right, rightCode);
+    }
+
+    // Recursive function to print Huffman codes (added this function)
+    void printCodesRec(Node* node, const char* code) const {
+        if (!node) return;
+
+        // If this is a leaf node, print the character and its code
+        if (node->left == nullptr && node->right == nullptr) {
+            cout << node->character << ": " << code << endl;
+            return;
+        }
+
+        // Traverse left and right children
+        char leftCode[256];
+        char rightCode[256];
+        strcpy(leftCode, code);
+        strcat(leftCode, "0");
+        printCodesRec(node->left, leftCode);
+
+        strcpy(rightCode, code);
+        strcat(rightCode, "1");
+        printCodesRec(node->right, rightCode);
+    }
+};
+
+int main() {
+    HuffmanCoding huffman;
+
+    int n;
+    cout << "Enter number of characters: ";
+    cin >> n;
+
+    char characters[256];
+    int frequencies[256];
+
+    // Input characters and their frequencies
+    cout << "Enter characters and their frequencies:\n";
+    for (int i = 0; i < n; ++i) {
+        cout << "Character: ";
+        cin >> characters[i];
+        cout << "Frequency: ";
+        cin >> frequencies[i];
+    }
+
+    // Build the Huffman tree and print codes
+    huffman.buildHuffmanTree(characters, frequencies, n);
+    huffman.printCodes();
+
+    return 0;
+}
